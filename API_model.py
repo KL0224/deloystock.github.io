@@ -62,4 +62,4 @@ def predict():
         return jsonify({'error': str(e)}), 400  # Trả về lỗi nếu không đủ dữ liệu
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
