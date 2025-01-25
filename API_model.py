@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import numpy as np
 import os 
@@ -9,7 +9,7 @@ import pandas as pd
 
 
 # Processing data
-data_fpt = pd.read_csv('FPT.csv')
+data_fpt = pd.read_csv('/var/www/html/deloystock.github.io/FPT.csv')
 data_fpt['Date/Time'] = pd.to_datetime(data_fpt['Date/Time'])
 data_fpt['H-L'] = data_fpt['High'] - data_fpt['Low']
 data_fpt['C-O'] = data_fpt['Close'] - data_fpt['Open']
@@ -44,10 +44,11 @@ app = Flask(__name__)
 CORS(app)
 
 # Load mô hình LSTM đã huấn luyện
-model = tf.keras.models.load_model('model_fpt.h5')
+model = tf.keras.models.load_model('/var/www/html/deloystock.github.io/model_fpt.h5')
 
-# predict = predict_stock_price("2021-12-22 14:13:00", model, data_fpt, 30)
-# print(predict)
+@app.route("/")
+def home():
+    return send_file("index.html") # Phục vụ file html
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -62,4 +63,4 @@ def predict():
         return jsonify({'error': str(e)}), 400  # Trả về lỗi nếu không đủ dữ liệu
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', post=5000)
